@@ -1,5 +1,6 @@
 package com.hotdeal.discord.domain.hotdeal;
 
+import com.hotdeal.discord.domain.time.BaseTime;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -26,7 +27,7 @@ import lombok.NoArgsConstructor;
     @UniqueConstraint(name = "uk_hot_deal_community_post",
         columnNames = {"communityCode", "postId"})
 })
-public class HotDeal {
+public class HotDeal extends BaseTime {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

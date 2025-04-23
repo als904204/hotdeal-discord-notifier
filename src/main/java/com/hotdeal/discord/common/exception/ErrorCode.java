@@ -20,9 +20,11 @@ public enum ErrorCode {
 
 
     // Discord Errors
-    CHANNEL_NOT_FOUND(HttpStatus.NOT_FOUND, "D001", "채널을 찾을 수 없습니다."),
-    EMAIL_DUPLICATION(HttpStatus.CONFLICT, "D002", "이미 사용중인 이메일입니다."),
-    LOGIN_INPUT_INVALID(HttpStatus.BAD_REQUEST, "D003", "로그인 정보가 유효하지 않습니다.");
+    DISCORD_CHANNEL_NOT_FOUND(HttpStatus.NOT_FOUND, "D001", "설정된 Discord 채널을 찾을 수 없거나 접근 권한이 없습니다."),
+    DISCORD_LOGIN_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "D002", "Discord 봇 로그인에 실패했습니다. 토큰을 확인하세요."),
+    DISCORD_INITIALIZATION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "D003", "Discord 봇 초기화에 실패했습니다."),
+    DISCORD_MESSAGE_SEND_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "D004", "Discord 메시지 전송 중 오류가 발생했습니다."),
+    DISCORD_INVALID_CHANNEL_ID_FORMAT(HttpStatus.BAD_REQUEST, "D005", "Discord 채널 ID 형식이 잘못되었습니다.");
 
     // Add other domain errors
 

@@ -1,5 +1,6 @@
 package com.hotdeal.discord.domain.user;
 
+import com.hotdeal.discord.domain.time.BaseTime;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -13,7 +14,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "discord_user")
-public class DiscordUser {
+public class DiscordUser extends BaseTime {
 
     // Discord User 고유 ID (String)를 기본 키로 사용
     @Id

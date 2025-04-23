@@ -1,4 +1,4 @@
-package com.hotdeal.discord.infrastructure.persistence.discord;
+package com.hotdeal.discord.infrastructure.persistence.user;
 
 import com.hotdeal.discord.domain.user.DiscordUser;
 import org.springframework.data.jpa.repository.JpaRepository;

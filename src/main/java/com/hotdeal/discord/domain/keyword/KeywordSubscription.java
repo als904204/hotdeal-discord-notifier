@@ -36,13 +36,9 @@ public class KeywordSubscription extends BaseTime {
     @Column(nullable = false)
     private String keyword;
 
-    @Column(name = "discord_user_id", nullable = false)
-    private String discordUserId;
-
     @Builder
-    public KeywordSubscription(Long id, String keyword, String discordUserId) {
+    public KeywordSubscription(Long id, String keyword) {
         this.id = id;
         this.keyword = keyword;
-        this.discordUserId = discordUserId;
     }
 }

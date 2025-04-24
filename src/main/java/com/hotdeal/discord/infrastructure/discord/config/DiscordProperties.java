@@ -23,4 +23,7 @@ public class DiscordProperties {
     @NotBlank(message = "Discord cron 표현식은 필수입니다.")
     private String cron;
 
+    @NotBlank(message = "Discord keyword 빈 값이 되서는 안됩니다.")
+    private String keyword;
+
 }

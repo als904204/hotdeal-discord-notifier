@@ -1,6 +1,6 @@
 package com.hotdeal.discord.infrastructure.discord;
 
-import com.hotdeal.discord.adapter.discord.command.DiscordSlashCommandListener;
+import com.hotdeal.discord.infrastructure.discord.command.DiscordSlashCommandListener;
 import com.hotdeal.discord.common.exception.ErrorCode;
 import com.hotdeal.discord.infrastructure.discord.config.DiscordProperties;
 import com.hotdeal.discord.infrastructure.discord.exception.DiscordBotInitializationException;

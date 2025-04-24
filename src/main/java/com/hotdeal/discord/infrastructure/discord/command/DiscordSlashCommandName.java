@@ -1,4 +1,4 @@
-package com.hotdeal.discord.adapter.discord.command;
+package com.hotdeal.discord.infrastructure.discord.command;
 
 import java.util.Arrays;
 import java.util.Optional;

@@ -1,6 +1,6 @@
 package com.hotdeal.discord.infrastructure.discord;
 
-import com.hotdeal.discord.infrastructure.discord.command.DiscordSlashCommandListener;
+import com.hotdeal.discord.infrastructure.discord.command.CommandListener;
 import com.hotdeal.discord.common.exception.ErrorCode;
 import com.hotdeal.discord.infrastructure.discord.config.DiscordProperties;
 import com.hotdeal.discord.infrastructure.discord.exception.DiscordBotInitializationException;
@@ -27,7 +27,7 @@ import org.springframework.stereotype.Component;
 public class DiscordBotInitializer {
 
     private final DiscordProperties discordProperties;
-    private final DiscordSlashCommandListener discordSlashCommandListener;
+    private final CommandListener commandListener;
     private JDA jda;
 
     @PostConstruct
@@ -56,7 +56,7 @@ public class DiscordBotInitializer {
             return JDABuilder.createDefault(discordProperties.getToken())
                 .enableIntents(intents)
                 .setActivity(Activity.playing("핫딜 알림"))
-                .addEventListeners(discordSlashCommandListener)
+                .addEventListeners(commandListener)
                 .disableCache(CacheFlag.VOICE_STATE, CacheFlag.EMOJI, CacheFlag.STICKER, CacheFlag.SCHEDULED_EVENTS)
                 .build()
                 .awaitReady();

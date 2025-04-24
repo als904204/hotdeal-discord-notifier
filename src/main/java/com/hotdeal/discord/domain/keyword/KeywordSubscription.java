@@ -36,6 +36,8 @@ public class KeywordSubscription extends BaseTime {
     @Column(nullable = false)
     private String keyword;
 
+    // DiscordUser 엔티티와 연관관계 설정
+
     @Builder
     public KeywordSubscription(Long id, String keyword) {
         this.id = id;

@@ -1,8 +1,7 @@
-package com.hotdeal.discord.infrastructure.discord;
+package com.hotdeal.discord.infrastructure.discord.config;
 
 import com.hotdeal.discord.infrastructure.discord.command.CommandListener;
 import com.hotdeal.discord.common.exception.ErrorCode;
-import com.hotdeal.discord.infrastructure.discord.config.DiscordProperties;
 import com.hotdeal.discord.infrastructure.discord.exception.DiscordBotInitializationException;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;

@@ -1,5 +1,7 @@
-package com.hotdeal.discord.infrastructure.discord.command;
+package com.hotdeal.discord.infrastructure.discord.listener;
 
+import com.hotdeal.discord.infrastructure.discord.command.CommandHandler;
+import com.hotdeal.discord.infrastructure.discord.command.CommandName;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;

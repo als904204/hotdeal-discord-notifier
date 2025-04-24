@@ -1,4 +1,4 @@
-package com.hotdeal.discord.adapter.discord.commend;
+package com.hotdeal.discord.adapter.discord.command;
 
 import com.hotdeal.discord.application.keyword.KeywordService;
 import java.util.ArrayList;

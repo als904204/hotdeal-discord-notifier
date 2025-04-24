@@ -7,6 +7,9 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import org.springframework.stereotype.Component;
 
+/**
+ * '/등록' 명령어 처리: 새로운 키워드를 등록하고 결과를 응답한다.
+ */
 @Component
 @RequiredArgsConstructor
 public class RegisterCommandHandler implements CommandHandler {

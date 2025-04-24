@@ -7,6 +7,9 @@ import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import org.springframework.stereotype.Component;
 
+/**
+ * '/삭제' 명령어 처리: 사용자 키워드를 삭제하고 결과를 응답한다
+ */
 @Component
 @RequiredArgsConstructor
 public class DeleteCommandHandler implements CommandHandler {

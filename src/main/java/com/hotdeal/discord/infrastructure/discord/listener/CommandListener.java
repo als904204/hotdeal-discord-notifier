@@ -22,6 +22,11 @@ public class CommandListener extends ListenerAdapter {
 
     private final Map<CommandName, CommandHandler> handlers;
 
+    /**
+     * Discord 채널에서 전달된 슬래시 명령어를 처리합니다.
+     * 명령어 이름을 기반으로 적절한 핸들러를 찾아 위임하고,
+     * 일치하는 핸들러가 없을 경우 오류 메시지를 반환합니다.
+     */
     @Override
     public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
         CommandName.fromString(event.getName())
@@ -37,6 +42,11 @@ public class CommandListener extends ListenerAdapter {
             );
     }
 
+    /**
+     * 채널에서 사용될 슬래시 명령어들을 등록합니다.
+     *
+     * @param event 채널 준비 이벤트를 나타내는 {@link GuildReadyEvent}.
+     */
     @Override
     public void onGuildReady(GuildReadyEvent event) {
 

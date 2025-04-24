@@ -6,6 +6,9 @@ import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import org.springframework.stereotype.Component;
 
+/**
+ * '/목록' 명령어 처리: 사용자 키워드 목록을 조회하여 응답한다.
+ */
 @Component
 @RequiredArgsConstructor
 public class ListCommandHandler implements CommandHandler {

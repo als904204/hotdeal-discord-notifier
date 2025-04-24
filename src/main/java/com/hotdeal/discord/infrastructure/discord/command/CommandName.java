@@ -7,6 +7,9 @@ import java.util.stream.Stream;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+/**
+ * 지원하는 슬래시 커맨드 이름과 설명을 정의하는 ENUM
+ */
 @Getter
 @RequiredArgsConstructor
 public enum CommandName {

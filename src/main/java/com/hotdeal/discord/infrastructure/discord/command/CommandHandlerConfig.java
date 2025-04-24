@@ -4,6 +4,9 @@ import java.util.Map;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * 각 CommandName에 대응하는 CommandHandler 빈을 구성하는 설정 클래스
+ */
 @Configuration
 public class CommandHandlerConfig {
 

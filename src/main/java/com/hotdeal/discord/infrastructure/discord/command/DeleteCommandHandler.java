@@ -27,7 +27,7 @@ public class DeleteCommandHandler implements CommandHandler {
 
         event.deferReply(true).queue();
 
-        if(Objects.isNull(option)) {
+        if(option == null) {
             EmbedBuilder eb = new EmbedBuilder()
                 .setTitle("키워드 삭제 실패")
                 .setDescription("❗ 삭제할 키워드를 입력해주세요.")

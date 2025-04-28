@@ -14,7 +14,7 @@ public class FmScheduler implements HotDealScheduler {
     private final FmKoreaCrawlManager fmKoreaCrawlManager;
 
     @Scheduled(cron = "${community.fmkorea.cron}")
-    public void scheduleFmKoreaCrawling() {
+    public void execute() {
         log.info("[스케줄러] Fmkorea 핫딜 크롤링 스케줄 작업을 시작합니다.");
         try {
             fmKoreaCrawlManager.synchronizeFmKoreaDeals();

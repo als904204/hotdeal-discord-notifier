@@ -18,14 +18,12 @@ import org.springframework.stereotype.Component;
 public class JsoupHttpFetcher implements HttpFetcher {
 
     private final JsoupProperties properties;
+    private final JsoupConnection connection;
 
     @Override
     public Document fetch(String url) {
         try {
-            Connection connection = Jsoup.connect(url)
-                .userAgent(properties.getUserAgent())
-                .timeout(properties.getTimeoutMs());
-            return connection.get();
+            return connection.get(url, properties.getUserAgent(), properties.getTimeoutMs());
         }catch (SocketTimeoutException e) {
             log.error("[HttpFetcher] Connection timeout for URL: {}. Error: {}", url, e.getMessage());
             throw new CrawlerHttpException(ErrorCode.CRAWLER_CONNECTION_TIMEOUT,

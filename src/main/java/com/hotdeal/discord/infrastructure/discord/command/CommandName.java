@@ -2,8 +2,6 @@ package com.hotdeal.discord.infrastructure.discord.command;
 
 import java.util.Arrays;
 import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -26,22 +24,6 @@ public enum CommandName {
         return Arrays.stream(values())
             .filter(cmd -> cmd.commandName.equalsIgnoreCase(text))
             .findFirst();
-    }
-
-    public String generateHelpMessage() {
-        return "**사용 가능한 명령어 목록:**\n" +
-            Stream.of(CommandName.values())
-                .map(cmd -> String.format("`%s` %s", cmd.getUsageExample(), cmd.getCommandEx()))
-                .collect(Collectors.joining("\n"));
-    }
-
-    public String getUsageExample() {
-        return switch (this) {
-            case REGISTER -> "/" + commandName + " <등록할 키워드 이름> ";
-            case DELETE -> "/" + commandName + " <삭제할 키워드 이름>";
-            case LIST -> "/" + commandName + "<등록한 키워드 목록 조회>";
-            case HELP -> "/" + commandName;
-        };
     }
 
 }

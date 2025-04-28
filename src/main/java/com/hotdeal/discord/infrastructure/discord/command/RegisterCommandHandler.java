@@ -2,9 +2,11 @@ package com.hotdeal.discord.infrastructure.discord.command;
 
 import com.hotdeal.discord.application.keyword.KeywordService;
 import com.hotdeal.discord.infrastructure.discord.config.DiscordProperties;
+import java.awt.Color;
+import java.text.MessageFormat;
 import lombok.RequiredArgsConstructor;
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
-import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import org.springframework.stereotype.Component;
 
 /**
@@ -20,18 +22,34 @@ public class RegisterCommandHandler implements CommandHandler {
     @Override
     public void handle(SlashCommandInteractionEvent event) {
 
-        String userId = event.getUser().getId();
-        OptionMapping option = event.getOption(properties.getKeyword());
-        String reply;
+        event.deferReply(true).queue();
+
+        var userId = event.getUser().getId();
+        var option = event.getOption(properties.getKeyword());
 
         if (option != null) {
-            String kw = option.getAsString();
+            var kw = option.getAsString();
             keywordService.registerKeyword(userId, kw);
-            reply = "**" + kw + "** 키워드가 등록되었습니다!";
+
+            var eb = new EmbedBuilder()
+                .setTitle("키워드 등록 완료")
+                .setDescription(MessageFormat.format("✅ **{0}** 키워드가 등록되었습니다!", kw))
+                .setColor(Color.GREEN)
+                .build();
+
+            event.getHook()
+                .sendMessageEmbeds(eb)
+                .queue();
+
         } else {
-            reply = "키워드를 입력해주세요.";
+            EmbedBuilder eb = new EmbedBuilder()
+                .setTitle("입력 오류")
+                .setDescription("❗ 키워드를 입력해주세요.")
+                .setColor(Color.RED);
+            event.getHook()
+                .sendMessageEmbeds(eb.build())
+                .queue();
         }
-        event.reply(reply).queue();
     }
 
 }

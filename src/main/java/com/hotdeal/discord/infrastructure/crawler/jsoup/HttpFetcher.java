@@ -1,4 +1,4 @@
-package com.hotdeal.discord.infrastructure.crawler.fetcher;
+package com.hotdeal.discord.infrastructure.crawler.jsoup;
 
 import org.jsoup.nodes.Document;
 

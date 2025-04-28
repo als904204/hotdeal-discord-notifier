@@ -1,13 +1,11 @@
-package com.hotdeal.discord.infrastructure.crawler.fetcher;
+package com.hotdeal.discord.infrastructure.crawler.jsoup;
 
 import com.hotdeal.discord.common.exception.ErrorCode;
 import com.hotdeal.discord.infrastructure.crawler.exception.CrawlerHttpException;
-import com.hotdeal.discord.infrastructure.crawler.properties.JsoupProperties;
 import java.io.IOException;
 import java.net.SocketTimeoutException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.jsoup.Connection.Response;
 import org.jsoup.nodes.Document;
 import org.springframework.stereotype.Component;
 

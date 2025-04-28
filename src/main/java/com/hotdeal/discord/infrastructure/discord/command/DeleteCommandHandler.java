@@ -4,7 +4,9 @@ import com.hotdeal.discord.application.keyword.KeywordService;
 import com.hotdeal.discord.domain.keyword.exception.KeywordNotFoundException;
 import com.hotdeal.discord.infrastructure.discord.config.DiscordProperties;
 import java.awt.Color;
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -28,13 +30,12 @@ public class DeleteCommandHandler implements CommandHandler {
         event.deferReply(true).queue();
 
         if(option == null) {
-            EmbedBuilder eb = new EmbedBuilder()
-                .setTitle("키워드 삭제 실패")
-                .setDescription("❗ 삭제할 키워드를 입력해주세요.")
-                .setColor(Color.RED);
-
             event.getHook()
-                .sendMessageEmbeds(eb.build())
+                .sendMessageEmbeds(new EmbedBuilder()
+                    .setTitle("키워드 삭제 실패")
+                    .setDescription("❗ 삭제할 키워드를 입력해주세요.")
+                    .setColor(Color.RED)
+                    .build())
                 .queue();
             return;
         }
@@ -44,26 +45,35 @@ public class DeleteCommandHandler implements CommandHandler {
         try {
             keywordService.deleteKeyword(userId, keyword);
 
-            var eb = new EmbedBuilder()
-                .setTitle("키워드 삭제 완료")
-                .setDescription(String.format("✅ **%s** 키워드가 성공적으로 삭제되었습니다!", keyword))
-                .setColor(Color.GREEN)
-                .build();
-
             event.getHook()
-                .sendMessageEmbeds(eb)
+                .sendMessageEmbeds(new EmbedBuilder()
+                    .setTitle("키워드 삭제 완료")
+                    .setDescription(String.format("✅ **%s** 키워드가 성공적으로 삭제되었습니다!", keyword))
+                    .setColor(Color.GREEN)
+                    .build())
                 .queue();
 
         } catch (KeywordNotFoundException e) {
 
-            var eb = new EmbedBuilder()
-                .setTitle("키워드 삭제 실패")
-                .setDescription("⚠️ 찾으시는 키워드가 등록되어 있지 않습니다.")
-                .setColor(Color.ORANGE)
-                .build();
+            var currentKeywordList = keywordService.getKeywordListByUserId(userId);
+
+            String listText = currentKeywordList.isEmpty()
+                ? "📭 등록된 키워드가 없습니다."
+                : currentKeywordList.stream()
+                    .map(s -> "• " + s)
+                    .collect(Collectors.joining("\n"));
+
+            String desc = String.format(
+                "⚠️ **키워드를 찾을 수 없습니다.**\n\n현재 등록된 키워드 목록\n%s\n\n`/삭제 <키워드>` 명령어로 다시 시도하세요.",
+                listText
+            );
 
             event.getHook()
-                .sendMessageEmbeds(eb)
+                .sendMessageEmbeds(new EmbedBuilder()
+                    .setTitle("키워드 삭제 실패")
+                    .setDescription(desc)
+                    .setColor(Color.ORANGE)
+                    .build())
                 .queue();
 
         } catch (Exception e) {

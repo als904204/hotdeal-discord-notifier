@@ -8,6 +8,7 @@ import java.net.SocketTimeoutException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Connection;
+import org.jsoup.Connection.Response;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.springframework.stereotype.Component;
@@ -23,7 +24,14 @@ public class JsoupHttpFetcher implements HttpFetcher {
     @Override
     public Document fetch(String url) {
         try {
-            return connection.get(url, properties.getUserAgent(), properties.getTimeoutMs());
+            Document elements = connection.get(url, properties.getUserAgent(),
+                properties.getTimeoutMs());
+            Response response = elements.connection().execute();
+            if (response.statusCode() >= 400) {
+                log.error("[HttpFetcher]HTTP error for URL: {}. Status code: {}", url, response.statusCode());
+                throw new CrawlerHttpException(ErrorCode.CRAWLER_HTTP_FETCH_FAILED);
+            }
+            return response.parse();
         }catch (SocketTimeoutException e) {
             log.error("[HttpFetcher] Connection timeout for URL: {}. Error: {}", url, e.getMessage());
             throw new CrawlerHttpException(ErrorCode.CRAWLER_CONNECTION_TIMEOUT,

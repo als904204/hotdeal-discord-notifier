@@ -59,4 +59,10 @@ public class HotDeal extends BaseTime {
         this.status = (status != null) ? status : HotDealStatus.ACTIVE;
     }
 
+    public void updateStatusIfEnded(HotDealStatus status) {
+        if (this.status == HotDealStatus.ACTIVE && status == HotDealStatus.END) {
+            this.status = HotDealStatus.END;
+        }
+    }
+
 }

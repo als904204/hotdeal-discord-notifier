@@ -1,4 +1,4 @@
-package com.hotdeal.discord.infrastructure.crawler.service;
+package com.hotdeal.discord.infrastructure.crawler.fm;
 
 import static com.hotdeal.discord.common.exception.ErrorCode.DATABASE_OPERATION_FAILED;
 import static com.hotdeal.discord.domain.hotdeal.CommunityType.FMKOREA;
@@ -7,7 +7,6 @@ import com.hotdeal.discord.common.exception.ErrorCode;
 import com.hotdeal.discord.domain.hotdeal.HotDeal;
 import com.hotdeal.discord.domain.hotdeal.HotDealStatus;
 import com.hotdeal.discord.infrastructure.crawler.dto.CrawledHotDealDto;
-import com.hotdeal.discord.infrastructure.crawler.service.crawl.FmKoreaCrawler;
 import com.hotdeal.discord.infrastructure.persistence.hotdeal.HotDealRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;

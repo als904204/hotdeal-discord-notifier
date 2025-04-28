@@ -1,11 +1,11 @@
-package com.hotdeal.discord.infrastructure.crawler.service.parser;
+package com.hotdeal.discord.infrastructure.crawler.fm;
 
 import com.hotdeal.discord.common.exception.ErrorCode;
 import com.hotdeal.discord.domain.hotdeal.CommunityType;
 import com.hotdeal.discord.domain.hotdeal.HotDealStatus;
 import com.hotdeal.discord.infrastructure.crawler.dto.CrawledHotDealDto;
 import com.hotdeal.discord.infrastructure.crawler.exception.CrawlerHttpException;
-import com.hotdeal.discord.infrastructure.crawler.properties.FmProperties;
+import com.hotdeal.discord.infrastructure.crawler.service.HotDealParser;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;

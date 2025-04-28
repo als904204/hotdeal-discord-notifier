@@ -1,4 +1,4 @@
-package com.hotdeal.discord.infrastructure.crawler.service.crawl;
+package com.hotdeal.discord.infrastructure.crawler.service;
 
 import com.hotdeal.discord.infrastructure.crawler.dto.CrawledHotDealDto;
 import java.util.List;

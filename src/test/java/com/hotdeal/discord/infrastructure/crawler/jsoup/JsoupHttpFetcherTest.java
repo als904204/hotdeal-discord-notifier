@@ -1,4 +1,4 @@
-package com.hotdeal.discord.infrastructure.crawler.fetcher;
+package com.hotdeal.discord.infrastructure.crawler.jsoup;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -6,7 +6,6 @@ import static org.mockito.Mockito.when;
 
 import com.hotdeal.discord.common.exception.ErrorCode;
 import com.hotdeal.discord.infrastructure.crawler.exception.CrawlerHttpException;
-import com.hotdeal.discord.infrastructure.crawler.properties.JsoupProperties;
 import java.io.IOException;
 import java.net.SocketTimeoutException;
 import org.jsoup.Jsoup;

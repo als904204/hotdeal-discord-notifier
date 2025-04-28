@@ -1,4 +1,4 @@
-package com.hotdeal.discord.infrastructure.crawler.properties;
+package com.hotdeal.discord.infrastructure.crawler.fm;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;

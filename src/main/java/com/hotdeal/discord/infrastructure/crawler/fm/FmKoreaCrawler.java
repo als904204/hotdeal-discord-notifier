@@ -45,16 +45,11 @@ public class FmKoreaCrawler implements CommunityCrawler {
 
                 String errorMessage = String.format("페이지(%s) 로딩 실패", targetUrl);
 
-                CrawlerHttpException crawlerEx = new CrawlerHttpException(
-                    ErrorCode.CRAWLER_HTTP_FETCH_FAILED,
+                log.error("[크롤러] HTTP 요청 처리 중 오류 발생: Code={}, Message={}, Cause={}",
+                    ErrorCode.CRAWLER_HTTP_FETCH_FAILED.getCode(),
                     errorMessage,
-                    e
-                );
-
-                log.error("[크롤러] HTTP 요청 처리 중 오류 발생: Code={}, Message={}",
-                    crawlerEx.getErrorCode().getCode(),
-                    crawlerEx.getMessage(),
-                    crawlerEx.getCause());
+                    e.getMessage(),
+                    e);
 
                 // 예외가 발생했으나, 전체 크롤링을 중단하지 않고 다음 페이지 계속 크롤링
                 continue;
@@ -73,8 +68,6 @@ public class FmKoreaCrawler implements CommunityCrawler {
                 if (processedPostIds.add(crawledInfo.postId())) {
                     crawledList.add(crawledInfo);
                     addedCount++;
-                } else {
-                    log.trace("[크롤러] 중복된 Post ID ({}) 발견되어 건너<0xEB>니다.", crawledInfo.postId());
                 }
             }
             log.info("[크롤러] 페이지 {} 파싱 완료. {}개 아이템 파싱, {}개 신규 추가됨.", page, parsedItems.size(), addedCount);

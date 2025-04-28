@@ -34,7 +34,7 @@ public class FmKoreaCrawlManager {
         try {
             crawledDeals = fmKoreaCrawler.crawl();
         } catch (Exception e) {
-            ErrorCode unexpectedErrorCode = ErrorCode.INTERNAL_SERVER_ERROR;
+            ErrorCode unexpectedErrorCode = ErrorCode.CRAWLER_UNEXPECTED_ERROR;
             log.error("[FM크롤링 매니저] Fmkorea 크롤링 중 예기치 않은 내부 오류 발생 (Code: {}): {}",
                 unexpectedErrorCode.getCode(), e.getMessage(), e);
             return;
@@ -67,8 +67,9 @@ public class FmKoreaCrawlManager {
                 failCount++;
             } catch (Exception e) {
                 failCount++;
+                ErrorCode unexpectedErrorCode = ErrorCode.CRAWLER_UNEXPECTED_ERROR;
                 log.error("[FM크롤링 매니저] 예기치 않은 오류 발생 (PostId: {}, ERROR: {})", deal.postId(),
-                    e.getMessage(), e);
+                    unexpectedErrorCode.getCode(), e);
             }
         }
         log.info("[FM크롤링 매니저] 동기화 최종 결과: 성공 {}, 실패 {}", successCount, failCount);
@@ -79,14 +80,18 @@ public class FmKoreaCrawlManager {
      */
     @Transactional
     public void saveOrUpdateDeal(CrawledHotDealDto deal) {
-        var optDeal = hotDealRepository.findByCommunityCodeAndPostId(FMKOREA, deal.postId()
-        );
+        var optDeal = hotDealRepository.findByCommunityCodeAndPostId(FMKOREA, deal.postId());
+
         optDeal.ifPresentOrElse(
             existsDeal -> existsDeal.updateStatusIfEnded(deal.status()),
             () -> insertNewDeal(deal)
         );
     }
 
+    /**
+    * ACTIVE 상태의 핫딜만 새로 추가합니다.
+    * 종료된 핫딜은 새로 추가하지 않습니다.
+    */
     private void insertNewDeal(CrawledHotDealDto deal) {
         if (deal.status() == HotDealStatus.ACTIVE) {
             var newDeal = HotDeal.builder()

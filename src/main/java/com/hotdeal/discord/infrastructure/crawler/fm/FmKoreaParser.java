@@ -31,16 +31,18 @@ public class FmKoreaParser implements HotDealParser {
      * 주어진 HTML Document 객체에서 핫딜 목록을 파싱합니다.
      *
      * @param doc 파싱할 Jsoup Document 객체
-     * @return 파싱된 CrawledInfo 객체 리스트
+     * @return 파싱된 CrawledHotDealDto 객체 리스트
      */
     @Override
     public List<CrawledHotDealDto> parsePages(Document doc) {
-        List<CrawledHotDealDto> results = new ArrayList<>();
         String listItemSelector = properties.getListItemSelector();
         String linkSelector = properties.getLinkSelector();
         String endedDealClass = properties.getEndedDealClass();
 
         Elements listItems = doc.select(listItemSelector);
+
+        List<CrawledHotDealDto> results = new ArrayList<>(listItems.size());
+
         log.debug("[파서] 페이지 내 아이템 {}개 파싱 시작 (선택자: {})", listItems.size(), listItemSelector);
 
         for (Element item : listItems) {
@@ -53,17 +55,17 @@ public class FmKoreaParser implements HotDealParser {
     }
 
     /**
-     * 개별 핫딜 아이템(HTML Element)을 파싱하여 CrawledInfo 객체를 생성합니다.
+     * 개별 핫딜 아이템(HTML Element)을 파싱하여 CrawledHotDealDto 객체를 생성합니다.
      *
      * @param item           파싱할 핫딜 아이템 Element 객체
      * @param linkSelector   링크 요소를 찾기 위한 CSS 선택자
      * @param endedDealClass 종료된 딜을 식별하는 CSS 클래스명
-     * @return 파싱된 정보가 담긴 Optional<CrawledInfo>, 파싱 실패 시 Optional.empty() 반환
+     * @return 파싱된 정보가 담긴 Optional<CrawledHotDealDto>, 파싱 실패 시 Optional.empty() 반환
      */
     private Optional<CrawledHotDealDto> parseHotDealItem(Element item, String linkSelector, String endedDealClass) {
         Element linkElement = item.selectFirst(linkSelector);
         if (linkElement == null) {
-            log.warn("[파서] 링크 요소를 찾지 못했습니다 (선택자: '{}'). 해당 아이템은 건너<0xEB>니다.", linkSelector);
+            log.warn("[파서] 링크 요소를 찾지 못했습니다 (선택자: '{}'). 해당 아이템은 스킵합니다.", linkSelector);
             // 개별 아이템 파싱 실패 시, 로그 남기고 Optional.empty() 반환하여 해당 아이템만 제외
             return Optional.empty();
         }
@@ -77,7 +79,7 @@ public class FmKoreaParser implements HotDealParser {
         try {
             postId = extractPostIdFromUrl(url);
         } catch (RuntimeException e) {
-            log.warn("[파서] Post ID 추출 실패 (URL: '{}'). 아이템 건너<0xEB>니다. 원인: {}", url, e.getMessage());
+            log.warn("[파서] Post ID 추출 실패 (URL: '{}'). 아이템 스킵합니다. 원인: {}", url, e.getMessage());
             // 개별 아이템 파싱 실패 시, 로그 남기고 Optional.empty() 반환
             return Optional.empty();
         }
@@ -86,7 +88,7 @@ public class FmKoreaParser implements HotDealParser {
         HotDealStatus currentStatus = isEnded ? HotDealStatus.END : HotDealStatus.ACTIVE;
 
         if (title.isEmpty() || url.isEmpty()) {
-            log.warn("[파서] 필수 정보(제목 또는 URL)가 부족합니다. 아이템 건너<0xEB>니다 (PostId: {}).", postId);
+            log.warn("[파서] 필수 정보(제목 또는 URL)가 부족합니다. 아이템은 스킵합니다 (PostId: {}).", postId);
             // 개별 아이템 파싱 실패 시, 로그 남기고 Optional.empty() 반환
             return Optional.empty();
         }

@@ -26,7 +26,7 @@ public class RegisterCommandHandler implements CommandHandler {
 
         if (option != null) {
             String kw = option.getAsString();
-            keywordService.registerKeyword(kw, userId);
+            keywordService.registerKeyword(userId, kw);
             reply = "**" + kw + "** 키워드가 등록되었습니다!";
         } else {
             reply = "키워드를 입력해주세요.";

@@ -25,7 +25,7 @@ public class DeleteCommandHandler implements CommandHandler {
 
         if (Objects.nonNull(option)) {
             String keyword = option.getAsString();
-            keywordService.deleteKeyword(keyword, userId);
+            keywordService.deleteKeyword(userId, keyword);
             replyMessage = "**" + keyword + "** 키워드가 삭제되었습니다!";
         } else {
             replyMessage = "삭제할 키워드를 입력해주세요.";

@@ -22,8 +22,7 @@ import lombok.NoArgsConstructor;
  * 사용자가 동일한 키워드를 등록함을 방지
  */
 @Table(name = "keyword_subscription", uniqueConstraints = {
-
-    @UniqueConstraint(
+        @UniqueConstraint(
         name = "uk_discord_user_keyword_subscription)",
         columnNames = {"discord_user_id", "keyword"})
 })
@@ -36,11 +35,13 @@ public class KeywordSubscription extends BaseTime {
     @Column(nullable = false)
     private String keyword;
 
-    // DiscordUser 엔티티와 연관관계 설정
+    @Column(name = "discord_user_id", nullable = false)
+    private String discordUserId;
 
     @Builder
-    public KeywordSubscription(Long id, String keyword) {
+    public KeywordSubscription(Long id, String keyword, String discordUserId) {
         this.id = id;
         this.keyword = keyword;
+        this.discordUserId = discordUserId;
     }
 }

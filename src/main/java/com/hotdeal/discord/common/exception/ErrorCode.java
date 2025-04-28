@@ -31,8 +31,11 @@ public enum ErrorCode {
     CRAWLER_URL_PARSING_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "CR002", "URL에서 필요한 정보를 추출하는데 실패했습니다."),
     CRAWLER_INVALID_ITEM_DATA(HttpStatus.INTERNAL_SERVER_ERROR, "CR003", "크롤링된 아이템에서 필수 정보가 누락되었습니다."),
     CRAWLER_CONNECTION_TIMEOUT(HttpStatus.INTERNAL_SERVER_ERROR, "CR004" ,"외부 사이트와의 접속 시간이 초과되었습니다." ),
-    CRAWLER_UNEXPECTED_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "CR005", "크롤러 실행 중 예기치 않은 내부 오류가 발생했습니다.");
+    CRAWLER_UNEXPECTED_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "CR005", "크롤러 실행 중 예기치 않은 내부 오류가 발생했습니다."),
 
+    // Keyword Errors
+    DUPLICATE_KEYWORD(HttpStatus.CONFLICT, "KW001", "이미 등록된 키워드입니다."),
+    NOTFOUND_KEYWORD(HttpStatus.NOT_FOUND, "KW002", "키워드를 찾을 수 없습니다");
     // Add other domain errors
 
     private final HttpStatus status;

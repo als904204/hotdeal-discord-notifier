@@ -1,5 +1,7 @@
 package com.hotdeal.discord.infrastructure.discord.config;
 
+import static com.hotdeal.discord.common.exception.ErrorCode.DISCORD_INITIALIZATION_FAILED;
+
 import com.hotdeal.discord.infrastructure.discord.listener.CommandListener;
 import com.hotdeal.discord.common.exception.ErrorCode;
 import com.hotdeal.discord.infrastructure.discord.exception.DiscordBotInitializationException;
@@ -15,6 +17,7 @@ import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.exceptions.InvalidTokenException;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
 /**
@@ -41,7 +44,7 @@ public class DiscordBotInitializer {
             throw e;
         } catch (Exception e) {
             log.error("Discord 봇 초기화 중 예상치 못한 오류 발생.", e);
-            throw new DiscordBotInitializationException(ErrorCode.DISCORD_INITIALIZATION_FAILED, "예상치 못한 초기화 오류", e);
+            throw new DiscordBotInitializationException(DISCORD_INITIALIZATION_FAILED, "예상치 못한 초기화 오류", e);
         }
     }
 
@@ -64,9 +67,9 @@ public class DiscordBotInitializer {
             throw new DiscordBotInitializationException(ErrorCode.DISCORD_LOGIN_FAILED, e);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new DiscordBotInitializationException(ErrorCode.DISCORD_INITIALIZATION_FAILED, "Discord 봇 초기화 대기 중 인터럽트 발생", e);
+            throw new DiscordBotInitializationException(DISCORD_INITIALIZATION_FAILED, "Discord 봇 초기화 대기 중 인터럽트 발생", e);
         } catch (IllegalArgumentException e) {
-            throw new DiscordBotInitializationException(ErrorCode.DISCORD_INITIALIZATION_FAILED, "Discord 설정 오류: " + e.getMessage(), e);
+            throw new DiscordBotInitializationException(DISCORD_INITIALIZATION_FAILED, "Discord 설정 오류: " + e.getMessage(), e);
         }
     }
 
@@ -88,6 +91,15 @@ public class DiscordBotInitializer {
                 jda.shutdownNow();
             }
         }
+    }
+
+    @Bean
+    public JDA jdaBean() {
+        if (jda == null) {
+            log.error("JDA Bean이 등록되지 않았습니다.");
+            throw new DiscordBotInitializationException(DISCORD_INITIALIZATION_FAILED);
+        }
+        return jda;
     }
 
 }

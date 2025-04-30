@@ -33,6 +33,7 @@ public class HotDealNotificationSender {
         // TODO : 현재는 모두 조회임 추후 개선, 이미 전송된 알람도 중복 전송중
         List<KeywordSubscription> allSubscriptions = keywordSubscriptionRepository.findAll();
 
+        // TODO : 키워드 매칭 로직 개선 필요, 현재 모든 구독자에 대해 동일한 핫딜 목록을 반복적으로 필터링중
         for (KeywordSubscription subscription : allSubscriptions) {
 
             // 키워드에 맞는 핫딜 필터링

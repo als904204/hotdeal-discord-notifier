@@ -20,7 +20,7 @@ public class DiscordMessageSender {
 
     /**
      * 디스코드 사용자에게 DM 전송
-     *
+     * TODO : 스레드가 대기 상태에 빠지거나, 콜백 처리용 내부 스레드 풀 고갈될 위험이 있음, timeout 고려
      * @param discordUserId 디스코드 사용자 ID
      * @param message 전송할 메시지 내용
      * @throws DiscordMessageSendException 메시지 전송 실패 시 발생
@@ -28,17 +28,17 @@ public class DiscordMessageSender {
      */
     public void sendDM(String discordUserId, String message) {
         try {
-            User user = jda.retrieveUserById(discordUserId).complete();
 
-            user.openPrivateChannel().queue(channel ->
-                channel.sendMessage(message).queue(
-                    success -> log.debug("메시지 전송 성공: {}", discordUserId),
-                    error -> {
-                        log.error("메시지 전송 실패: {}", error.getMessage(), error);
-                    }
-                ),
-                channelError -> log.error("Private 채널 열기 실패: {}", discordUserId, channelError)
-            );
+            jda.retrieveUserById(discordUserId).queue(user ->
+                user.openPrivateChannel().queue(channel ->
+                        channel.sendMessage(message).queue(
+                            success -> log.debug("메시지 전송 성공: {}", discordUserId),
+                            error -> {
+                                log.error("메시지 전송 실패: {}", error.getMessage(), error);
+                            }
+                        ),
+                    channelError -> log.error("Private 채널 열기 실패: {}", discordUserId, channelError)
+                ));
         } catch (ErrorResponseException e) {
             if (e.getErrorResponse() == ErrorResponse.UNKNOWN_USER) {
                 log.warn("Discord ID: {} 사용자를 찾을 수 없음.", discordUserId, e);

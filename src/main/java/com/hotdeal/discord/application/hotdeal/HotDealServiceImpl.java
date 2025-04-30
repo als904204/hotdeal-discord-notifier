@@ -20,8 +20,15 @@ public class HotDealServiceImpl implements HotDealService{
 
     @Override
     public List<HotDeal> filterMatchingHotDeals(List<HotDeal> hotDeals, String keyword) {
+
+        if (keyword == null || keyword.isEmpty()) {
+            return List.of();
+        }
+
+        String lowercaseKeyword = keyword.toLowerCase();
+
         return hotDeals.stream()
-            .filter(hotDeal -> hotDeal.getTitle().contains(keyword))
+            .filter(hotDeal -> hotDeal.getTitle().toLowerCase().contains(lowercaseKeyword))
             .toList();
     }
 

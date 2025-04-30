@@ -10,6 +10,7 @@ import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 
 @Slf4j
@@ -18,8 +19,8 @@ import org.springframework.stereotype.Component;
 public class HotDealNotificationSender {
 
     private final HotDealService hotDealService;
-    private final KeywordSubscriptionRepository keywordSubscriptionRepository;
     private final NotificationRecordRepository notificationRecordRepository;
+    private final KeywordSubscriptionRepository keywordSubscriptionRepository;
     private final DiscordMessageSender discordMessageSender;
 
     public void processKeywordMatchNotifications() {
@@ -55,36 +56,24 @@ public class HotDealNotificationSender {
                 Long keywordId = subscription.getId();
                 Long hotDealId = deal.getId();
 
-                boolean alreadySent = notificationRecordRepository.existsByKeywordIdAndHotDealId(
-                    keywordId, hotDealId);
+                NotificationRecord record = NotificationRecord.builder()
+                    .keywordId(keywordId)
+                    .hotDealId(hotDealId)
+                    .build();
 
-                if (alreadySent) {
-                    log.debug("키워드 {} 에 대해 핫딜 {} 알림 이미 전송됨. 건너뜁니다.",
-                        keywordId, hotDealId);
-                    continue;
-                }
-
-                try {
+                try{
+                    notificationRecordRepository.save(record);
                     var msg = hotDealService.buildHotDealMessage(Collections.singletonList(deal));
                     discordMessageSender.sendDM(subscription.getDiscordUserId(), msg);
-
-                    NotificationRecord record = NotificationRecord.builder()
-                        .keywordId(keywordId)
-                        .hotDealId(hotDealId)
-                        .build();
-
-                    notificationRecordRepository.save(record);
-
-                    log.debug("사용자 {}, 핫딜 {} 알림 전송 완료 및 기록 저장", subscription.getDiscordUserId(),
-                        hotDealId);
-                } catch (Exception e) {
-                    log.error("사용자 {} 핫딜 {} 알림 전송 중 오류 발생: {}",
-                        subscription.getDiscordUserId(), hotDealId, e.getMessage());
+                    log.info("사용자 {} 에게 핫딜 {} 알림 전송 완료 (upsert)", subscription.getDiscordUserId(),
+                        deal.getTitle());
+                } catch (DataIntegrityViolationException e) {
+                    // 유니크 제약조건 위반 시 이미 알림을 보낸 것이므로 무시
+                    log.debug("사용자 {} 에게 핫딜 {} 알림이 이미 전송됨", subscription.getDiscordUserId(), deal.getTitle());
                 }
 
             }
         }
     }
-
 
 }

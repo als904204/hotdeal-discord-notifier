@@ -25,6 +25,7 @@ public enum ErrorCode {
     DISCORD_INITIALIZATION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "DC003", "Discord 봇 초기화에 실패했습니다."),
     DISCORD_MESSAGE_SEND_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "DC004", "Discord 메시지 전송 중 오류가 발생했습니다."),
     DISCORD_INVALID_CHANNEL_ID_FORMAT(HttpStatus.BAD_REQUEST, "DC005", "Discord 채널 ID 형식이 잘못되었습니다."),
+    DISCORD_USER_NOT_FOUND(HttpStatus.NOT_FOUND, "DC006", "Discord 사용자를 찾을 수 없습니다"),
 
     // Crawler Errors
     CRAWLER_HTTP_FETCH_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "CR001", "외부 사이트에서 데이터를 가져오는데 실패했습니다."),

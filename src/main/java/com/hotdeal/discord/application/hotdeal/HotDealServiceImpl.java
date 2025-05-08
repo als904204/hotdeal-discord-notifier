@@ -3,15 +3,22 @@ package com.hotdeal.discord.application.hotdeal;
 import com.hotdeal.discord.domain.hotdeal.HotDeal;
 import com.hotdeal.discord.domain.hotdeal.HotDealStatus;
 import com.hotdeal.discord.infrastructure.persistence.hotdeal.HotDealRepository;
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class HotDealServiceImpl implements HotDealService{
 
     private final HotDealRepository hotDealRepository;
+    @Value("${hotdeal.expiration.hours:6}")
+    private long expirationHours;
 
     @Override
     public List<HotDeal> findActiveHotDeals() {
@@ -46,6 +53,21 @@ public class HotDealServiceImpl implements HotDealService{
         }
 
         return messageBuilder.toString();
+    }
+
+    @Transactional
+    @Override
+    public void expireOldHotDeals() {
+        List<HotDeal> activeDeals = hotDealRepository.findByStatus(HotDealStatus.ACTIVE);
+        LocalDateTime sixHoursAgo = LocalDateTime.now().minusHours(expirationHours);
+        int expiredCount = 0;
+        for (HotDeal deal : activeDeals) {
+            if (deal.getCreatedAt().isBefore(sixHoursAgo)) {
+                deal.updateStatusIfEnded(HotDealStatus.END);
+                ++expiredCount;
+            }
+        }
+        log.info("{}건, 핫딜 상태 변경 완료", expiredCount);
     }
 
 }

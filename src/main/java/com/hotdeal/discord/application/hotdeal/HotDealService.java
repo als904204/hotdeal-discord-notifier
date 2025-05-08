@@ -10,4 +10,6 @@ public interface HotDealService {
     List<HotDeal> filterMatchingHotDeals(List<HotDeal> hotDeals, String keyword);
 
     String buildHotDealMessage(List<HotDeal> hotDeals);
+
+    void expireOldHotDeals();
 }

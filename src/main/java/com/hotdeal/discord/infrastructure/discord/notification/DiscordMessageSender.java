@@ -1,12 +1,17 @@
 package com.hotdeal.discord.infrastructure.discord.notification;
 
 import com.hotdeal.discord.common.exception.ErrorCode;
+import com.hotdeal.discord.domain.hotdeal.HotDeal;
 import com.hotdeal.discord.infrastructure.discord.exception.DiscordMessageSendException;
 import com.hotdeal.discord.infrastructure.discord.exception.DiscordUserNotFound;
+import java.awt.Color;
+import java.time.Instant;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.requests.ErrorResponse;
 import org.springframework.stereotype.Component;
@@ -21,17 +26,20 @@ public class DiscordMessageSender {
     /**
      * 디스코드 사용자에게 DM 전송
      * TODO : 스레드가 대기 상태에 빠지거나, 콜백 처리용 내부 스레드 풀 고갈될 위험이 있음, timeout 고려
+     *
      * @param discordUserId 디스코드 사용자 ID
-     * @param message 전송할 메시지 내용
      * @throws DiscordMessageSendException 메시지 전송 실패 시 발생
-     * @throws DiscordUserNotFound 디스코드 유저 없음
+     * @throws DiscordUserNotFound         디스코드 유저 없음
      */
-    public void sendDM(String discordUserId, String message) {
+    public void sendDM(String discordUserId, List<HotDeal> deals) {
+
+        MessageEmbed buildMsg = buildEmbedMessage(deals);
+
         try {
 
             jda.retrieveUserById(discordUserId).queue(user ->
                 user.openPrivateChannel().queue(channel ->
-                        channel.sendMessage(message).queue(
+                        channel.sendMessageEmbeds(buildMsg).queue(
                             success -> log.debug("메시지 전송 성공: {}", discordUserId),
                             error -> {
                                 log.error("메시지 전송 실패: {}", error.getMessage(), error);
@@ -48,6 +56,25 @@ public class DiscordMessageSender {
                 throw new DiscordMessageSendException(ErrorCode.DISCORD_MESSAGE_SEND_FAILED, e);
             }
         }
+    }
+
+    public MessageEmbed buildEmbedMessage(List<HotDeal> hotDeals) {
+
+        EmbedBuilder eb = new EmbedBuilder()
+            .setTitle("🔥 키워드에 맞는 핫딜을 발견했습니다! 🔥")
+            .setColor(Color.RED)
+            .setTimestamp(Instant.now())
+            .setFooter("핫딜 알람 서비스");
+
+        for(HotDeal deal : hotDeals) {
+            eb.addField(
+                deal.getTitle(),
+                String.format("[바로가기](%s)", deal.getPostUrl()),
+                false
+            );
+        }
+
+        return eb.build();
     }
 
 }

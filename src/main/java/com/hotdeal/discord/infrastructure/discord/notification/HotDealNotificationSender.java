@@ -6,7 +6,7 @@ import com.hotdeal.discord.domain.keyword.KeywordSubscription;
 import com.hotdeal.discord.domain.notification.NotificationRecord;
 import com.hotdeal.discord.infrastructure.persistence.keyword.KeywordSubscriptionRepository;
 import com.hotdeal.discord.infrastructure.persistence.notification.NotificationRecordRepository;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +23,11 @@ public class HotDealNotificationSender {
     private final KeywordSubscriptionRepository keywordSubscriptionRepository;
     private final DiscordMessageSender discordMessageSender;
 
+    /**
+     * 1. 활성 핫딜을 조회
+     * 2. 구독 중인 키워드와 매칭되는 핫딜을 찾는다.
+     * 3. 해당 사용자에게 알림을 전송한다.
+     */
     public void processKeywordMatchNotifications() {
 
         // TODO : 현재는 진행중인 핫딜 모두 조회임 추후 개선
@@ -41,39 +46,61 @@ public class HotDealNotificationSender {
             return;
         }
 
-        // TODO : 키워드 매칭 로직 개선 필요, 현재 모든 구독자에 대해 동일한 핫딜 목록을 반복적으로 필터링중
-        for (KeywordSubscription subscription : allSubscriptions) {
+        // (사용자 ID, 키워드) 기준으로 매칭되는 핫딜들을 묶어서 처리
+        allSubscriptions.forEach(subscription -> {
 
-            // 키워드에 맞는 핫딜 필터링
-            List<HotDeal> matchingDeals = hotDealService.filterMatchingHotDeals(activeHotDeals,
+            // 해당 구독 키워드에 맞는 핫딜 필터링
+            List<HotDeal> matchingDeals = hotDealService.filterMatchingHotDeals(
+                activeHotDeals,
                 subscription.getKeyword());
 
             if (matchingDeals.isEmpty()) {
-                continue;
+                return;
             }
 
-            for(HotDeal deal : matchingDeals) {
-                Long keywordId = subscription.getId();
-                Long hotDealId = deal.getId();
+            var matchingDealIds = matchingDeals.stream()
+                .map(HotDeal::getId)
+                .toList();
 
-                NotificationRecord record = NotificationRecord.builder()
-                    .keywordId(keywordId)
-                    .hotDealId(hotDealId)
-                    .build();
+            var alreadyNotifiedHotDealIds = notificationRecordRepository.NotifiedHotDealIdsByKeywordIdAndHotDealIdsIn(
+                subscription.getId(), matchingDealIds
+            );
 
-                try{
-                    notificationRecordRepository.save(record);
-                    var msg = hotDealService.buildHotDealMessage(Collections.singletonList(deal));
-                    discordMessageSender.sendDM(subscription.getDiscordUserId(), msg);
-                    log.info("사용자 {} 에게 핫딜 {} 알림 전송 완료 (upsert)", subscription.getDiscordUserId(),
-                        deal.getTitle());
-                } catch (DataIntegrityViolationException e) {
-                    // 유니크 제약조건 위반 시 이미 알림을 보낸 것이므로 무시
-                    log.debug("사용자 {} 에게 핫딜 {} 알림이 이미 전송됨", subscription.getDiscordUserId(), deal.getTitle());
+            var newDealsToNotify = matchingDeals.stream()
+                .filter(deal -> !alreadyNotifiedHotDealIds.contains(deal.getId()))
+                .toList();
+
+            if (!newDealsToNotify.isEmpty()) {
+
+                List<HotDeal> successfullyNotifiedDeals = new ArrayList<>();
+
+                for (HotDeal dealToNotify : newDealsToNotify) {
+                    NotificationRecord record = NotificationRecord.builder()
+                        .keywordId(subscription.getId())
+                        .hotDealId(dealToNotify.getId())
+                        .build();
+
+                    try{
+                        notificationRecordRepository.save(record);
+                        successfullyNotifiedDeals.add(dealToNotify);
+                    }catch (DataIntegrityViolationException e) {
+                        log.debug("사용자 {} 에게 핫딜 {} (키워드: {}) 알림이 이미 전송됨",
+                            subscription.getDiscordUserId(), dealToNotify.getTitle(),
+                            subscription.getKeyword());
+                    } catch (Exception e) {
+                        log.warn("NotificationRecord 저장 중 오류 발생 (KeywordId: {}, HotDealId: {}): {}",
+                            subscription.getId(), dealToNotify.getId(), e.getMessage(), e);
+                    }
                 }
-
+                if (!successfullyNotifiedDeals.isEmpty()) {
+                    discordMessageSender.sendDM(subscription.getDiscordUserId(),
+                        successfullyNotifiedDeals);
+                    log.info("사용자 {} 에게 키워드 '{}'에 대한 {}개의 핫딜 알림 전송 완료",
+                        subscription.getDiscordUserId(), subscription.getKeyword(),
+                        successfullyNotifiedDeals.size());
+                }
             }
-        }
+        });
     }
 
 }

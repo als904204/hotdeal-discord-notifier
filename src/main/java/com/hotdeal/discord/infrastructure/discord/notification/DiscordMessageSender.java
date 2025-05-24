@@ -6,6 +6,7 @@ import com.hotdeal.discord.infrastructure.discord.exception.DiscordMessageSendEx
 import com.hotdeal.discord.infrastructure.discord.exception.DiscordUserNotFound;
 import java.awt.Color;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,7 +34,7 @@ public class DiscordMessageSender {
      */
     public void sendDM(String discordUserId, List<HotDeal> deals) {
 
-        MessageEmbed buildMsg = buildEmbedMessage(deals);
+        List<MessageEmbed> buildMsg = buildEmbedMessage(deals);
 
         try {
 
@@ -58,23 +59,35 @@ public class DiscordMessageSender {
         }
     }
 
-    public MessageEmbed buildEmbedMessage(List<HotDeal> hotDeals) {
+    public List<MessageEmbed> buildEmbedMessage(List<HotDeal> hotDeals) {
 
-        EmbedBuilder eb = new EmbedBuilder()
-            .setTitle("🔥 키워드에 맞는 핫딜을 발견했습니다! 🔥")
-            .setColor(Color.RED)
-            .setTimestamp(Instant.now())
-            .setFooter("핫딜 알람 서비스");
+        final int MAX_FIELDS = 25;
+        List<MessageEmbed> pages = new ArrayList<>();
 
-        for(HotDeal deal : hotDeals) {
-            eb.addField(
-                deal.getTitle(),
-                String.format("[바로가기](%s)", deal.getPostUrl()),
-                false
-            );
+        for (int start = 0; start < hotDeals.size(); start += MAX_FIELDS) {
+            EmbedBuilder eb = new EmbedBuilder()
+                .setTitle("🔥 키워드에 맞는 핫딜을 발견했습니다! 🔥")
+                .setColor(Color.RED)
+                .setTimestamp(Instant.now())
+                .setFooter(String.format("페이지 %d/%d",
+                    start / MAX_FIELDS + 1,
+                    (hotDeals.size() + MAX_FIELDS - 1) / MAX_FIELDS
+                ));
+
+            int end = Math.min(start + MAX_FIELDS, hotDeals.size());
+            List<HotDeal> sublist = hotDeals.subList(start, end);
+            for (HotDeal deal : sublist) {
+                eb.addField(
+                    deal.getTitle(),
+                    String.format("[바로가기](%s)", deal.getPostUrl()),
+                    false
+                );
+            }
+            pages.add(eb.build());
+
         }
 
-        return eb.build();
+        return pages;
     }
 
 }
